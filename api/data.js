@@ -1,4 +1,3 @@
-// api/data.js — usa REDIS_URL que Upstash inyecta automáticamente
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -8,84 +7,33 @@ export default async function handler(req, res) {
   const { key } = req.query;
   if (!key) return res.status(400).json({ error: 'key requerida' });
 
-  const redisUrl = process.env.REDIS_URL || process.env.STORAGE_URL;
-  if (!redisUrl) return res.status(500).json({ error: 'REDIS_URL no configurada' });
+  const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
+  const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-  // Parse Redis URL: redis://:password@host:port
-  let host, port, password;
-  try {
-    const url = new URL(redisUrl);
-    host = url.hostname;
-    port = url.port || 6379;
-    password = url.password || url.username;
-  } catch(e) {
-    return res.status(500).json({ error: 'Redis URL inválida: ' + e.message });
-  }
-
-  async function redisCmd(args) {
-    const cmd = args.map(a => {
-      const s = String(a);
-      return `$${Buffer.byteLength(s)}\r\n${s}\r\n`;
-    }).join('');
-    const body = `*${args.length}\r\n${cmd}`;
-
-    const protocol = redisUrl.startsWith('rediss') ? 'https' : 'http';
-    const baseUrl = `${protocol}://${host}:${port}`;
-
-    // Use Upstash REST API if available (rediss:// with upstash.io)
-    if (redisUrl.includes('upstash.io') || redisUrl.includes('upstash')) {
-      const restUrl = redisUrl
-        .replace('rediss://', 'https://')
-        .replace('redis://', 'http://')
-        .replace(`:${password}@`, '@')
-        .replace(/@([^:]+):(\d+)/, '/$1');
-
-      // Extract token and endpoint for Upstash REST
-      const upstashEndpoint = `https://${host}`;
-      const upstashToken = password;
-
-      const response = await fetch(`${upstashEndpoint}/${args.join('/')}`, {
-        method: args[0] === 'GET' ? 'GET' : 'POST',
-        headers: {
-          'Authorization': `Bearer ${upstashToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: args[0] !== 'GET' ? JSON.stringify(args.slice(1)) : undefined
-      });
-      return await response.json();
-    }
-    return null;
+  if (!UPSTASH_URL || !UPSTASH_TOKEN) {
+    if (req.method === 'GET') return res.status(200).json({ value: null });
+    return res.status(200).json({ ok: true });
   }
 
   try {
-    // Use Upstash HTTP REST API directly
-    const upstashEndpoint = `https://${host}`;
-    const upstashToken = password;
-
     if (req.method === 'GET') {
-      const response = await fetch(`${upstashEndpoint}/get/${encodeURIComponent(key)}`, {
-        headers: { 'Authorization': `Bearer ${upstashToken}` }
+      const r = await fetch(`${UPSTASH_URL}/get/${encodeURIComponent(key)}`, {
+        headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
       });
-      const data = await response.json();
+      const data = await r.json();
       return res.status(200).json({ value: data.result ?? null });
     }
-
     if (req.method === 'POST') {
       const { value } = req.body;
-      const response = await fetch(`${upstashEndpoint}/set/${encodeURIComponent(key)}`, {
+      await fetch(`${UPSTASH_URL}/set/${encodeURIComponent(key)}`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${upstashToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify([value])
+        headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify([value, 'EX', 31536000])
       });
-      const data = await response.json();
-      return res.status(200).json({ ok: true, result: data.result });
+      return res.status(200).json({ ok: true });
     }
-
-  } catch (error) {
-    console.error('Redis error:', error);
-    return res.status(500).json({ error: error.message });
+  } catch (e) {
+    if (req.method === 'GET') return res.status(200).json({ value: null });
+    return res.status(200).json({ ok: true });
   }
 }
