@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OLPASA · SGC ISO 9001:2015</title>
+<meta name='description' content='Sistema de Gestión de Calidad ISO 9001:2015 — OLPASA'>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0f2744;--blue:#1a4a8a;--blue-l:#eaf1fb;
+  --accent:#e8a020;--gold:#f5c842;
+  --green:#16a34a;--green-l:#dcfce7;
+  --amber:#d97706;--amber-l:#fef3c7;
+  --red:#dc2626;--red-l:#fee2e2;
+  --grey:#f0f4fa;--border:#dde3ee;
+  --text:#0f2744;--muted:#6b7a99;--white:#fff;
+  --shadow:0 2px 16px rgba(15,39,68,.10);
+  --r:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--grey);color:var(--text);min-height:100vh;overflow:hidden}
+
+/* ── SCREENS ── */
+.screen{display:none;width:100%;height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ══ LOGIN ══════════════════════════════════════════════════ */
+#loginScreen{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);align-items:center;justify-content:center}
+.login-card{background:#fff;border-radius:20px;padding:48px 40px;width:420px;box-shadow:0 24px 60px rgba(0,0,0,.3);text-align:center}
+.login-logo{width:64px;height:64px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;font-weight:900;color:var(--navy);font-family:'DM Serif Display'}
+.login-card h1{font-family:'DM Serif Display';font-size:26px;color:var(--navy);margin-bottom:6px}
+.login-card p{color:var(--muted);font-size:13px;margin-bottom:32px}
+.user-btn{width:100%;padding:12px 20px;border-radius:10px;border:2px solid var(--border);background:var(--grey);cursor:pointer;font-size:14px;font-weight:600;color:var(--navy);text-align:left;transition:.15s;margin-bottom:8px;font-family:'DM Sans'}
+.user-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ══ APP ════════════════════════════════════════════════════ */
+#appScreen{flex-direction:column}
+
+/* TOPBAR */
+.topbar{background:var(--navy);color:#fff;display:flex;align-items:center;height:56px;padding:0 20px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.3);gap:4px;z-index:100}
+.topbar-brand{display:flex;align-items:center;gap:10px;margin-right:24px}
+.tb-logo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--navy);font-size:16px;font-family:'DM Serif Display'}
+.tb-name{font-family:'DM Serif Display';font-size:16px;line-height:1.2}
+.tb-sub{font-size:10px;color:#8aafd4}
+.nav-btn{padding:6px 14px;border-radius:8px;border:none;background:transparent;color:#8aafd4;cursor:pointer;font-size:13px;font-weight:600;font-family:'DM Sans';transition:.15s}
+.nav-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
+.nav-btn.active{background:rgba(255,255,255,.15);color:#fff}
+.tb-spacer{flex:1}
+.stat-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border-radius:20px;padding:3px 10px;font-size:12px}
+.stat-dot{width:8px;height:8px;border-radius:50%}
+.score-badge{background:var(--accent);color:var(--navy);border-radius:20px;padding:3px 12px;font-weight:800;font-size:13px}
+.tb-user{font-size:11px;color:#8aafd4;padding-left:10px;border-left:1px solid rgba(255,255,255,.2);white-space:nowrap}
+
+/* BODY */
+.app-body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:252px;background:var(--white);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.sb-cap{padding:7px 16px;font-size:10px;font-weight:700;letter-spacing:1px;color:#fff;text-transform:uppercase;background:var(--blue);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.sb-cap:hover{background:#2055a0}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;border-left:3px solid transparent;transition:.12s}
+.sb-item:hover{background:var(--grey);border-left-color:var(--border)}
+.sb-item.active{background:var(--blue-l);border-left-color:var(--blue)}
+.sb-code{font-family:'JetBrains Mono';font-size:11px;font-weight:600;color:var(--muted);min-width:36px}
+.sb-item.active .sb-code{color:var(--blue)}
+.sb-label{flex:1;font-size:12px;color:#374151;line-height:1.3}
+.sb-item.active .sb-label{color:var(--navy);font-weight:600}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* MAIN */
+.main-content{flex:1;overflow-y:auto;padding:24px 28px}
+.main-content::-webkit-scrollbar{width:5px}
+.main-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* CARDS */
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-pad{padding:20px 22px}
+
+/* PAGE TITLES */
+.page-h1{font-family:'DM Serif Display';font-size:26px;color:var(--navy);margin-bottom:4px}
+.page-sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--white);border-radius:var(--r);padding:18px 20px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:8px}
+.kpi-val{font-size:32px;font-weight:800;font-family:'JetBrains Mono'}
+.kpi-sub{font-size:11px;color:#9ca3af;margin-top:4px}
+
+/* CHARTS ROW */
+.charts-row{display:grid;grid-template-columns:1fr 280px;gap:14px;margin-bottom:20px}
+
+/* ALERTS ROW */
+.alerts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.alert-item{padding:10px 12px;border-radius:8px;margin-bottom:8px;cursor:pointer;transition:.12s}
+.alert-item:hover{opacity:.85}
+.alert-c{background:var(--red-l);border-left:3px solid var(--red)}
+.alert-h{background:var(--amber-l);border-left:3px solid var(--amber)}
+.alert-title{font-size:12px;font-weight:700}
+.alert-body{font-size:11px;margin-top:2px}
+
+/* STATUS BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-C{background:var(--green-l);color:var(--green)}
+.badge-P{background:var(--amber-l);color:var(--amber)}
+.badge-N{background:var(--red-l);color:var(--red)}
+.badge-risk-muy{background:#fee2e2;color:#7f1d1d}
+.badge-risk-alto{background:#ffedd5;color:#9a3412}
+.badge-risk-medio{background:var(--amber-l);color:#78350f}
+.badge-risk-bajo{background:var(--green-l);color:#14532d}
+
+/* ── CLAUSULA VIEW ── */
+.cl-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px}
+.cl-grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+.cl-left{display:flex;flex-direction:column;gap:14px}
+.cl-right{position:sticky;top:0;height:calc(100vh - 140px);display:flex;flex-direction:column}
+
+.status-selector{display:flex;gap:10px;margin-bottom:14px}
+.ss-btn{flex:1;padding:10px 8px;border-radius:10px;border:2px solid var(--border);background:var(--grey);cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:.15s;font-family:'DM Sans'}
+.ss-btn:hover{border-color:var(--blue)}
+.ss-btn.sel-C{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.ss-btn.sel-P{background:var(--amber-l);border-color:var(--amber);color:var(--amber)}
+.ss-btn.sel-N{background:var(--red-l);border-color:var(--red);color:var(--red)}
+
+.section-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding-bottom:8px;border-bottom:1px solid var(--grey);margin-bottom:10px}
+.breach-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--grey);font-size:13px;line-height:1.5}
+.breach-num{color:var(--red);font-weight:700;flex-shrink:0}
+.doc-chip{background:var(--blue-l);border-radius:6px;padding:4px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--blue);font-weight:600;display:inline-block;margin:3px 3px 3px 0}
+.upload-zone{border:2px dashed var(--border);border-radius:8px;padding:12px;text-align:center;cursor:pointer;font-size:12px;color:var(--muted);transition:.15s;display:block}
+.upload-zone:hover{border-color:var(--blue);background:var(--blue-l);color:var(--blue)}
+.file-item{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--grey);border-radius:6px;font-size:11px;margin-bottom:4px}
+.file-del{cursor:pointer;color:var(--red);margin-left:auto;font-size:14px;background:none;border:none}
+.notes-area{width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans';resize:vertical;color:var(--text);background:var(--grey)}
+.notes-area:focus{outline:none;border-color:var(--blue);background:#fff}
+.save-btn{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans';transition:.15s;margin-top:4px}
+.save-btn:hover{background:var(--blue)}
+
+/* AI CHAT */
+.ai-panel{background:var(--white);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;height:100%}
+.ai-header{padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ai-messages{flex:1;overflow-y:auto;padding:14px 14px;display:flex;flex-direction:column;gap:10px}
+.ai-messages::-webkit-scrollbar{width:3px}
+.ai-messages::-webkit-scrollbar-thumb{background:var(--border)}
+.ai-msg{max-width:85%;padding:10px 12px;border-radius:12px;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.ai-msg.user{background:var(--navy);color:#fff;align-self:flex-end;border-radius:12px 12px 4px 12px}
+.ai-msg.assistant{background:var(--grey);color:var(--navy);align-self:flex-start;border-radius:12px 12px 12px 4px}
+.ai-empty{color:#9ca3af;font-size:12px;text-align:center;padding:20px 0}
+.ai-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.ai-input{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:'DM Sans';outline:none}
+.ai-input:focus{border-color:var(--blue)}
+.ai-send{padding:8px 14px;background:var(--accent);border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:700;transition:.15s}
+.ai-send:hover{opacity:.85}
+.ai-send:disabled{opacity:.4;cursor:not-allowed}
+.typing-dots{display:inline-flex;gap:4px;padding:10px 14px}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bounce .8s infinite}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* ── PLAN DE ACCIÓN ── */
+.plan-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.plan-kpi{background:var(--white);border-radius:10px;padding:14px 18px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.plan-kpi label{font-size:11px;color:var(--muted);font-weight:600;display:block;margin-bottom:4px}
+.plan-kpi span{font-size:28px;font-weight:800;font-family:'JetBrains Mono'}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filter-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--white);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans';transition:.15s}
+.filter-btn:hover{border-color:var(--navy)}
+.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.task-card{background:var(--white);border-radius:12px;padding:16px 18px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:10px;display:flex;align-items:flex-start;gap:14px}
+.task-prio-bar{width:4px;border-radius:4px;align-self:stretch;flex-shrink:0}
+.task-body{flex:1}
+.task-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.task-meta{font-size:11px;color:#9ca3af;display:flex;gap:14px;flex-wrap:wrap}
+.task-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.task-estado-sel{padding:5px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:'DM Sans';font-weight:600;cursor:pointer}
+.task-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:4px}
+.add-task-btn{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--navy);color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 20px rgba(15,39,68,.4);display:flex;align-items:center;justify-content:center;transition:.15s;z-index:50}
+.add-task-btn:hover{background:var(--blue);transform:scale(1.05)}
+
+/* ── MATRIZ ── */
+.matriz-table{width:100%;border-collapse:collapse}
+.matriz-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--grey)}
+.matriz-table td{padding:10px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;cursor:pointer;transition:.1s}
+.matriz-table tr:hover td{background:var(--blue-l)}
+.cap-row td{background:var(--navy);color:#fff;font-weight:700;font-size:13px;cursor:default}
+.cap-row:hover td{background:var(--navy)!important}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:32px;width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.modal h2{font-family:'DM Serif Display';font-size:20px;color:var(--navy);margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans';outline:none;transition:.15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.btn-primary{flex:1;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans'}
+.btn-secondary{flex:1;padding:11px;background:var(--grey);color:#374151;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans'}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:9999;transition:.3s;opacity:0;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* SPINNER */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* DOC ANALYSIS */
+.doc-upload-zone{border:2px dashed var(--border);border-radius:10px;padding:18px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted);transition:.2s;display:block;position:relative}
+.doc-upload-zone:hover{border-color:var(--blue);background:var(--blue-l);color:var(--blue)}
+.doc-upload-zone.dragging{border-color:var(--accent);background:#fff8e6}
+.doc-card{background:var(--grey);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:10px}
+.doc-card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.doc-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.doc-card-meta{flex:1;min-width:0}
+.doc-card-name{font-family:'JetBrains Mono';font-size:12px;font-weight:600;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-card-info{font-size:11px;color:var(--muted);margin-top:2px}
+.doc-replace-btn{font-size:11px;color:var(--blue);background:none;border:1px solid var(--blue);border-radius:6px;padding:3px 8px;cursor:pointer;font-family:'DM Sans';white-space:nowrap}
+.doc-replace-btn:hover{background:var(--blue);color:#fff}
+.analyze-btn{width:100%;padding:10px;background:linear-gradient(135deg,var(--accent),var(--gold));color:var(--navy);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans';display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;margin-top:8px}
+.analyze-btn:hover{opacity:.9;transform:translateY(-1px)}
+.analyze-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.analysis-result{margin-top:12px;border-radius:10px;overflow:hidden;border:1px solid #bdd4f8}
+.analysis-header{background:var(--blue);color:#fff;padding:10px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px}
+.analysis-body{background:linear-gradient(135deg,#f0f5ff,#e8f0fe);padding:14px;font-size:13px;line-height:1.7;color:var(--navy);white-space:pre-wrap}
+.analysis-actions{background:#fff;padding:10px 14px;display:flex;gap:8px;border-top:1px solid var(--border)}
+.action-apply{padding:7px 14px;background:var(--green);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans'}
+.action-discard{padding:7px 14px;background:var(--grey);color:var(--muted);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans'}
+.analyzing-overlay{background:var(--grey);border-radius:10px;padding:20px;text-align:center;margin-top:10px}
+.analyzing-bar{height:4px;background:var(--border);border-radius:4px;margin:10px 0;overflow:hidden}
+.analyzing-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--accent));border-radius:4px;animation:analyzeProgress 3s ease-in-out infinite}
+@keyframes analyzeProgress{0%{width:0;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0;margin-left:100%}}
+
+/* EMPTY */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:360px;color:#9ca3af;text-align:center}
+.empty-icon{font-size:48px;opacity:.3;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ LOGIN ════════════════ -->
+<div id="loginScreen" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">O</div>
+    <h1>OLPASA · SGC</h1>
+    <p>Sistema de Gestión de Calidad ISO 9001:2015<br>Aceite Crudo de Palma · Padre Abad, Ucayali</p>
+    <div id="userBtns"></div>
+  </div>
+</div>
+
+<!-- ════════════════ APP ════════════════ -->
+<div id="appScreen" class="screen">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="tb-logo">O</div>
+      <div><div class="tb-name">OLPASA · SGC ISO 9001</div><div class="tb-sub">Aceite Crudo de Palma · Padre Abad, Ucayali</div></div>
+    </div>
+    <button class="nav-btn active" onclick="showView('dashboard')">📊 Dashboard</button>
+    <button class="nav-btn" onclick="showView('clausula')">📋 Cláusulas</button>
+    <button class="nav-btn" onclick="showView('plan')">✅ Plan de Acción</button>
+    <button class="nav-btn" onclick="showView('matriz')">🗂 Matriz</button>
+    <div class="tb-spacer"></div>
+    <div id="tbStats" style="display:flex;gap:10px;align-items:center;font-size:12px"></div>
+    <div class="tb-user" id="tbUser"></div>
+  </div>
+
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- MAIN -->
+    <div class="main-content" id="mainContent">
+      <div id="viewDashboard"></div>
+      <div id="viewClausula" style="display:none"></div>
+      <div id="viewPlan" style="display:none"></div>
+      <div id="viewMatriz" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA TAREA -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <h2>Nueva tarea del plan de acción</h2>
+    <div class="form-group"><label>Título *</label><input id="fTitulo" placeholder="Ej: Elaborar Matriz R&O del SGC de Calidad"></div>
+    <div class="form-group"><label>Cláusula relacionada</label><input id="fClausula" placeholder="Ej: 6.1"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Prioridad</label>
+        <select id="fPrioridad"><option>Crítica</option><option selected>Alta</option><option>Media</option><option>Baja</option></select></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="fEstado"><option selected>Pendiente</option><option>En proceso</option><option>Completado</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Responsable</label><input id="fResponsable"></div>
+      <div class="form-group"><label>Plazo</label><input type="date" id="fPlazo"></div>
+    </div>
+    <div class="form-group"><label>Descripción</label><textarea id="fDesc" style="min-height:70px" placeholder="Acciones, criterios de éxito, observaciones..."></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="addTask()">Añadir tarea</button>
+      <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════
+const USERS = ["Gestor de Calidad","Sostenibilidad y SIG","Gerente General","Auditor Interno","Producción"];
+
+const CAPS = [
+ {cap:"4",title:"Contexto de la Organización",items:[
+  {id:"4.1",title:"Conocimiento del contexto",estado:"P",riesgo:"ALTO",
+   req:"Determinar cuestiones internas y externas pertinentes al SGC. Realizar seguimiento y revisión de esta información.",
+   analisis:"OLPASA está certificada, por lo que realiza análisis de contexto. Sin embargo, NO se ha evidenciado un documento formal de análisis de contexto (FODA/PESTEL) actualizado ni un registro de su revisión periódica documentada.",
+   brechas:["No se evidenció documento formal de análisis de contexto (FODA/PESTEL).","No hay registro de la frecuencia de revisión ni de la última actualización.","El Plan HACCP menciona contexto pero no es suficiente para ISO 9001."],
+   docs:["Cartilla de Contexto Organizacional (pendiente)","Plan Estratégico (GG-L)"],
+   riesgoTexto:"ALTO: El auditor pedirá el documento de contexto y evidencia de su revisión. Si no existe → OBSERVACIÓN o NC MENOR."},
+  {id:"4.2",title:"Partes interesadas",estado:"P",riesgo:"MEDIO",
+   req:"Identificar partes interesadas pertinentes al SGC y sus requisitos. Realizar seguimiento y revisión.",
+   analisis:"Se infiere que OLPASA tiene identificadas sus partes interesadas: clientes refinadoras, proveedores RFF, DIGESA, SENASA, comunidad, trabajadores. No se ha evidenciado una matriz formal con sus requisitos documentados.",
+   brechas:["No se evidenció matriz formal de partes interesadas.","No hay registro de revisión periódica.","Los requisitos de cada parte interesada no están documentados formalmente."],
+   docs:["Matriz de Partes Interesadas (pendiente)","Certificado ISO 9001 vigente"],
+   riesgoTexto:"MEDIO: Auditor pedirá la matriz de PI. Si no existe → NC MENOR."},
+  {id:"4.3",title:"Alcance del SGC",estado:"P",riesgo:"MEDIO",
+   req:"Determinar y documentar el alcance del SGC. Justificar exclusiones. Debe estar disponible como información documentada.",
+   analisis:"El alcance está definido en el certificado ISO 9001: extracción y comercialización de ACP y Almendra de Palmiste en planta Padre Abad, Ucayali. Debe existir también como información documentada interna.",
+   brechas:["El alcance existe en el certificado pero debe estar disponible como info documentada interna.","Las exclusiones (ej. 8.3 Diseño) deben estar justificadas documentalmente.","Verificar coherencia entre alcance declarado y actividades reales."],
+   docs:["Certificado ISO 9001 vigente","Cartilla de Alcance (OLPASA-SIG-C)"],
+   riesgoTexto:"MEDIO: Auditor verificará coherencia entre alcance interno, certificado y exclusiones justificadas."},
+  {id:"4.4",title:"SGC y sus procesos",estado:"P",riesgo:"ALTO",
+   req:"Establecer, implementar, mantener y mejorar el SGC. Determinar procesos, entradas, salidas, secuencia, interacciones, criterios, recursos, responsabilidades, riesgos e indicadores.",
+   analisis:"OLPASA tiene 14 procesos codificados: SIG, AD, AQ, GC, GG, LO, LS, RH, MT, PR, MP, GI, SGSST, SGMA. Se infiere que tienen mapa de procesos y caracterizaciones. No se han revisado todas para confirmar que incluyen riesgos e indicadores.",
+   brechas:["No se verificó que TODAS las caracterizaciones estén actualizadas.","No se confirmó que incluyan riesgos por proceso e indicadores medibles.","Algunos procesos (GI, AD, GC) podrían estar menos desarrollados que los productivos."],
+   docs:["Mapa de Procesos","Caracterizaciones de proceso (YY-P o YY-C)","OLPASA-SIG-F-007 Lista Maestra"],
+   riesgoTexto:"ALTO: Auditor revisará caracterizaciones de todos los procesos. Incompletas → NC MENOR por proceso afectado."},
+ ]},
+ {cap:"5",title:"Liderazgo",items:[
+  {id:"5.1.1",title:"Liderazgo y compromiso",estado:"P",riesgo:"MEDIO",
+   req:"Alta dirección demuestra liderazgo: asume responsabilidad del SGC, establece política y objetivos, promueve enfoque a procesos y pensamiento basado en riesgos, asegura recursos.",
+   analisis:"El GG aprueba documentos clave y preside la revisión por la dirección. El compromiso existe pero debe ser demostrable con evidencias concretas más allá de la aprobación de documentos.",
+   brechas:["El liderazgo se evidencia en aprobaciones pero no en registros de participación activa.","No se confirmó si el GG realiza recorridos de verificación en planta.","Las actas de revisión por la dirección deben ser completas."],
+   docs:["Actas de Revisión por la Dirección","Plan Operativo Anual (GG-L)","Registros de asignación de recursos"],
+   riesgoTexto:"MEDIO: Auditor entrevistará al GG. Si no demuestra conocimiento del SGC e indicadores → OBSERVACIÓN."},
+  {id:"5.1.2",title:"Enfoque al cliente",estado:"P",riesgo:"ALTO",
+   req:"Alta dirección asegura que se determinan, comprenden y cumplen requisitos del cliente. Se consideran riesgos que afectan la conformidad. Se mantiene enfoque en satisfacción del cliente.",
+   analisis:"Los requisitos del ACP están en OLPASA-AQ-E-001. Se realiza control de calidad en despacho. Sin embargo, no se evidenció un mecanismo formal y documentado de medición de satisfacción del cliente.",
+   brechas:["No se evidenció encuesta o mecanismo formal de satisfacción del cliente.","No hay registro documentado de retroalimentación ni de quejas con seguimiento.","La medición de satisfacción del cliente es una brecha recurrente en auditorías."],
+   docs:["OLPASA-AQ-E-001 Especificaciones","OLPASA-AQ-F-016 Inspección transporte","Certificados de calidad de despacho"],
+   riesgoTexto:"ALTO: Auditor pedirá el mecanismo de medición de satisfacción del cliente. Ausencia → NC MENOR."},
+  {id:"5.2.1",title:"Política de calidad",estado:"C",riesgo:"BAJO",
+   req:"Política apropiada al contexto, con marco para objetivos de calidad, compromiso de cumplir requisitos y mejora continua.",
+   analisis:"OLPASA tiene Política de Calidad e Inocuidad Alimentaria definida y aprobada por el GG. Incluye los elementos requeridos por la norma. Punto bien cubierto.",
+   brechas:["Verificar que la política esté vigente, firmada y con fecha de aprobación visible.","Revisar si se actualiza cuando cambia el contexto."],
+   docs:["Cartilla Política de Calidad e Inocuidad (OLPASA-SIG-C)","OLPASA-SIG-L-001 Plan HACCP (sección política)"],
+   riesgoTexto:"BAJO: La política existe. Auditor verificará si está disponible, actualizada y si el personal la conoce."},
+  {id:"5.2.2",title:"Comunicación de la política",estado:"P",riesgo:"MEDIO",
+   req:"Política disponible como información documentada, comunicada, entendida y aplicada dentro de la organización y disponible para partes interesadas.",
+   analisis:"La política está publicada en instalaciones y se incluye en capacitaciones. Sin embargo, publicar no garantiza comprensión. Se requieren evidencias de comunicación activa y evaluación de comprensión.",
+   brechas:["Publicar la política no es evidencia suficiente de comprensión.","No se confirmó si existe evaluación de comprensión en el personal operativo.","La política debe estar disponible para partes interesadas externas."],
+   docs:["Registros de capacitación","Registros de inducción personal","Fotos política publicada en planta"],
+   riesgoTexto:"MEDIO: Auditor entrevistará a operadores de planta. Si no pueden explicar la política → OBSERVACIÓN."},
+  {id:"5.3",title:"Roles y responsabilidades",estado:"C",riesgo:"BAJO",
+   req:"Asignar, comunicar y asegurar comprensión de responsabilidades y autoridades para roles pertinentes al SGC.",
+   analisis:"MOF y organigrama aprobados por GG. OLPASA-SIG-P-001 define responsabilidades documentales. Las caracterizaciones de proceso asignan dueños de proceso. Estructura bien definida.",
+   brechas:["Verificar que el MOF esté actualizado incluyendo el nuevo rol de Resp. Calidad e Inocuidad.","Confirmar que el organigrama refleja la estructura real actual."],
+   docs:["MOF (RH-U)","Organigrama OLPASA","OLPASA-SIG-P-001 Cuadro N°3"],
+   riesgoTexto:"BAJO: Auditor verificará coherencia entre MOF, organigrama y personas reales."},
+ ]},
+ {cap:"6",title:"Planificación",items:[
+  {id:"6.1",title:"Riesgos y oportunidades",estado:"N",riesgo:"MUY ALTO",
+   req:"Determinar riesgos y oportunidades del SGC. Planificar e implementar acciones. Evaluar eficacia de las acciones.",
+   analisis:"OLPASA gestiona riesgos para SST (ISO 45001) y ambiente (ISO 14001). Para CALIDAD específicamente, NO se ha evidenciado una Matriz formal de R&O del SGC. El Plan HACCP cubre riesgos de inocuidad pero NO los riesgos del sistema de gestión de calidad.",
+   brechas:["NO se evidenció Matriz de R&O específica para el SGC de Calidad.","El Plan HACCP NO es equivalente a la gestión de R&O del SGC.","No se documentan las acciones para abordar riesgos de calidad ni la evaluación de su eficacia.","Es una de las cláusulas más auditadas en ISO 9001:2015."],
+   docs:["Pendiente: Matriz de R&O del SGC de Calidad","Plan HACCP (inocuidad, no SGC)","Matrices R&O de ISO 45001 e ISO 14001"],
+   riesgoTexto:"MUY ALTO: Ausencia de Matriz R&O del SGC → NC MAYOR potencial. Es el requisito más diferenciador de la versión 2015 vs 2008."},
+  {id:"6.2",title:"Objetivos de calidad",estado:"P",riesgo:"ALTO",
+   req:"Establecer objetivos de calidad medibles, coherentes con la política, con seguimiento, comunicados y actualizados. Planificar qué, recursos, responsables, plazo y evaluación.",
+   analisis:"Se asume que OLPASA tiene objetivos de calidad en el Plan Operativo Anual. Sin embargo, no se han revisado para confirmar que son SMART y que tienen seguimiento documentado con indicadores.",
+   brechas:["No se verificó que los objetivos cumplan todos los requisitos de 6.2.1 (medibles, con seguimiento, comunicados, actualizados).","No se confirmó la planificación de 6.2.2 (qué, recursos, responsable, plazo, evaluación).","Los objetivos de calidad deben estar separados e identificables de los objetivos generales del negocio."],
+   docs:["Plan Operativo Anual","Fichas de indicadores por proceso"],
+   riesgoTexto:"ALTO: Auditor pedirá los objetivos de calidad formales y el estado de cumplimiento con datos del período auditado."},
+  {id:"6.3",title:"Planificación de cambios",estado:"P",riesgo:"MEDIO",
+   req:"Los cambios al SGC deben realizarse de forma planificada considerando propósito, consecuencias, integridad del SGC, recursos y responsabilidades.",
+   analisis:"OLPASA-SIG-P-001 gestiona cambios en documentación (versiones). Sin embargo, los cambios en PROCESOS no necesariamente pasan por una evaluación formal de impacto en el SGC.",
+   brechas:["El control de cambios solo está formalizado para documentos, no para cambios en procesos.","No hay evidencia de evaluación de impacto en el SGC ante cambios operacionales."],
+   docs:["OLPASA-SIG-P-001 (historial de versiones)","OLPASA-MT-P-001"],
+   riesgoTexto:"MEDIO: Auditor preguntará por cambios recientes en procesos y cómo se evaluó el impacto en el SGC."},
+ ]},
+ {cap:"7",title:"Apoyo",items:[
+  {id:"7.1.1",title:"Recursos - Generalidades",estado:"P",riesgo:"MEDIO",
+   req:"Determinar y proporcionar recursos para establecer, implementar, mantener y mejorar el SGC.",
+   analisis:"El GG aprueba el POA con asignación de recursos. Sin embargo, la asignación específica de recursos para el SGC debe estar documentada y ser trazable a las salidas de la revisión por la dirección.",
+   brechas:["No se confirmó que la asignación de recursos para el SGC esté documentada específicamente.","Las salidas de la RxD deben incluir decisiones sobre recursos.","Si el POA existe pero no está vinculado al SGC, no es evidencia suficiente."],
+   docs:["Plan Operativo Anual","Actas de Revisión por la Dirección"],
+   riesgoTexto:"MEDIO: Auditor pedirá evidencia de que los recursos asignados son suficientes y apropiados para mantener el SGC."},
+  {id:"7.1.2",title:"Personas",estado:"C",riesgo:"BAJO",
+   req:"Determinar y proporcionar personas necesarias para la implementación eficaz del SGC y operación/control de procesos.",
+   analisis:"OLPASA tiene estructura definida con 14 procesos y dueños de proceso asignados. El MOF define perfiles. Los puestos clave del SGC (Calidad, SIG) están cubiertos.",
+   brechas:["Verificar que los puestos clave del SGC no tienen sobrecarga de funciones.","Confirmar que hay personal suficiente para cubrir los procesos durante ausencias."],
+   docs:["MOF (RH-U)","Organigrama","Contratos de personal"],
+   riesgoTexto:"BAJO: Este punto raramente genera NC si hay MOF definido y personal asignado."},
+  {id:"7.1.3",title:"Infraestructura",estado:"C",riesgo:"BAJO",
+   req:"Determinar, proporcionar y mantener infraestructura necesaria para la operación de procesos y conformidad de productos.",
+   analisis:"OLPASA tiene planta industrial con equipos identificados: esterilizadores, prensas, centrifugas, tanques, laboratorio. El programa de mantenimiento preventivo (MT-P-001) asegura operatividad.",
+   brechas:["Verificar que el inventario de equipos esté actualizado y vinculado al programa de mantenimiento.","El laboratorio de calidad debe estar incluido con sus equipos específicos."],
+   docs:["OLPASA-MT-P-001 Gestión de Mantenimiento","OLPASA-MT-F-001 Órdenes de mantenimiento","Inventario de equipos"],
+   riesgoTexto:"BAJO: Punto bien cubierto si el programa de mantenimiento existe y tiene registros."},
+  {id:"7.1.4",title:"Ambiente para la operación",estado:"C",riesgo:"BAJO",
+   req:"Determinar y mantener ambiente necesario (factores humanos y físicos) para la operación de procesos y conformidad del producto.",
+   analisis:"OLPASA controla condiciones de proceso. Los programas POES y BPM cubren factores físicos. Los factores humanos se abordan desde SGSST (ISO 45001).",
+   brechas:["Los factores humanos del ambiente (no solo físicos) deben estar considerados para calidad.","Verificar que las condiciones del laboratorio estén controladas y registradas."],
+   docs:["OLPASA-AQ-C-001 L&D","OLPASA-AQ-POES-003","OLPASA-SIG-M-001 Manual BPM","Registros SGSST"],
+   riesgoTexto:"BAJO: Los programas POES y BPM cubren adecuadamente este requisito para el proceso de extracción de ACP."},
+  {id:"7.1.5",title:"Seguimiento y medición",estado:"P",riesgo:"ALTO",
+   req:"Asegurar validez y fiabilidad de resultados de medición. Calibrar equipos a intervalos definidos con trazabilidad. Conservar información documentada.",
+   analisis:"OLPASA tiene programa de calibración: manómetros, termómetros, balanzas, pH metro HANNA HI 2020, kit cloro HACH. Se usan laboratorios externos acreditados. Se conservan certificados.",
+   brechas:["No se verificó que TODOS los equipos usados en control de calidad estén en el programa de calibración.","No se confirmó que las frecuencias de calibración están definidas y se cumplen.","¿Los equipos del laboratorio (estufa, balanza analítica) están todos calibrados?","¿Se evalúa el impacto cuando un equipo sale de calibración?"],
+   docs:["OLPASA-AQ-F-001 Control de calibración","Certificados de calibración vigentes","OLPASA-PR-I-02"],
+   riesgoTexto:"ALTO: Auditor revisará certificados de calibración vigentes de CADA equipo. Un equipo sin calibración vigente → NC MENOR inmediata."},
+  {id:"7.1.6",title:"Conocimientos de la organización",estado:"P",riesgo:"MEDIO",
+   req:"Determinar y gestionar conocimientos necesarios para la operación de procesos. Considerar pérdida de conocimiento y adquisición de nuevo conocimiento.",
+   analisis:"Los instructivos de operación y procedimientos conservan conocimiento técnico. Sin embargo, no existe un sistema formal de gestión del conocimiento que prevenga la pérdida ante rotación de personal crítico.",
+   brechas:["No hay mecanismo formal para capturar lecciones aprendidas.","¿Qué pasa si el Resp. de Calidad o el operador clave del esterilizado renuncia?","El conocimiento tácito no documentado es un riesgo real.","No se evidenció un repositorio formal de conocimiento organizacional."],
+   docs:["OLPASA-PR-I-02,03,05,07","Registros de capacitación","Procedimientos de proceso"],
+   riesgoTexto:"MEDIO: Auditor preguntará cómo gestiona OLPASA el conocimiento ante rotación de personal. Respuestas vagas → OBSERVACIÓN."},
+  {id:"7.2",title:"Competencia",estado:"P",riesgo:"ALTO",
+   req:"Determinar competencia requerida, asegurar que personas sean competentes, tomar acciones cuando sea necesario y conservar información documentada como evidencia.",
+   analisis:"MOF define perfiles de competencia. Plan anual de capacitación. Registros de asistencia. Sin embargo, asistir a una capacitación no es lo mismo que ser competente. La evaluación de eficacia es la brecha clave.",
+   brechas:["No se confirmó que existe evaluación de eficacia de capacitaciones (post-test, observación en puesto).","Los registros de asistencia NO son evidencia de competencia.","No se verificó si hay acciones tomadas cuando alguien no alcanza la competencia requerida."],
+   docs:["MOF (RH-U)","Plan anual de capacitación","Registros de capacitación","OLPASA-AQ-POES-003"],
+   riesgoTexto:"ALTO: Auditor pedirá evidencia de evaluación de eficacia de capacitaciones. Ausencia → OBSERVACIÓN frecuente."},
+  {id:"7.3",title:"Toma de conciencia",estado:"P",riesgo:"ALTO",
+   req:"Personal consciente de la política de calidad, objetivos pertinentes, su contribución a la eficacia del SGC y las implicaciones del incumplimiento.",
+   analisis:"Se realizan inducciones y capacitaciones. La política está publicada. Sin embargo, la conciencia real del personal operativo de planta es difícil de demostrar sin evidencias específicas de comprensión.",
+   brechas:["No se confirmó que las capacitaciones incluyen explícitamente los 4 puntos requeridos por 7.3.","No hay evaluaciones de comprensión del personal.","La publicación de la política NO garantiza toma de conciencia."],
+   docs:["Registros de inducción","Registros de capacitación","Política publicada en planta"],
+   riesgoTexto:"ALTO: Auditor entrevistará operadores de planta directamente. Si no saben cómo su trabajo afecta la calidad → OBSERVACIÓN."},
+  {id:"7.4",title:"Comunicación",estado:"P",riesgo:"MEDIO",
+   req:"Determinar comunicaciones internas y externas pertinentes al SGC: qué comunicar, cuándo, a quién, cómo y quién comunica.",
+   analisis:"Existe comunicación por correo para aprobación de documentos y distribución de copias controladas. Sin embargo, no existe un Plan o Matriz de Comunicaciones formal que cubra todos los tipos de comunicación del SGC.",
+   brechas:["NO existe una Matriz/Plan de Comunicaciones formal del SGC.","La distribución de documentos no equivale a un plan de comunicaciones.","No están definidos todos los canales, frecuencias y responsables.","La comunicación externa no está formalizada para el SGC."],
+   docs:["OLPASA-SIG-P-001","OLPASA-SIG-F-009 Lista distribución copias","Procedimiento GC"],
+   riesgoTexto:"MEDIO: Auditor pedirá el plan de comunicaciones. Si no existe → OBSERVACIÓN. Fácil de levantar con una matriz simple."},
+  {id:"7.5.1",title:"Información documentada",estado:"C",riesgo:"BAJO",
+   req:"El SGC debe incluir la información documentada requerida por la norma y la que la organización determine necesaria para la eficacia.",
+   analisis:"OLPASA tiene sistema robusto: 14 tipos de documentos codificados, listas maestras SIG-F-007 y SIG-F-010, procedimiento SIG-P-001 actualizado a versión 7 en febrero 2026. Uno de los puntos más fuertes.",
+   brechas:["Verificar que las listas maestras estén actualizadas al 100%.","Confirmar que la información documentada obligatoria por la norma está toda presente."],
+   docs:["OLPASA-SIG-P-001 v7 (20/02/2026)","OLPASA-SIG-F-007","OLPASA-SIG-F-008","OLPASA-SIG-F-009","OLPASA-SIG-F-010"],
+   riesgoTexto:"BAJO: OLPASA tiene uno de sus puntos más fuertes aquí. La estructura de codificación y control es sólida."},
+  {id:"7.5.2",title:"Creación y actualización",estado:"C",riesgo:"BAJO",
+   req:"Al crear/actualizar información documentada: identificación y descripción apropiadas, formato y medios adecuados, revisión y aprobación.",
+   analisis:"El procedimiento SIG-P-001 define el flujo completo con cuadros de codificación, tipos de letra, flujo de aprobación. Bien definido y actualizado.",
+   brechas:["La aprobación vía 'OK por correo electrónico' debe conservarse sistemáticamente como evidencia.","Verificar que la aprobación por correo sea rastreable y esté archivada por documento."],
+   docs:["OLPASA-SIG-P-001 (Cuadros N°1 al N°5 y N°10)","Documentos del SGC como evidencia"],
+   riesgoTexto:"BAJO: El procedimiento está bien definido. El riesgo es la trazabilidad de aprobaciones por correo."},
+  {id:"7.5.3",title:"Control de información documentada",estado:"P",riesgo:"MEDIO",
+   req:"Controlar disponibilidad, protección, distribución, acceso, almacenamiento, control de cambios, conservación y disposición.",
+   analisis:"Los documentos se distribuyen en PDF a carpetas en PCs individuales. Hay carpeta 'obsoletos'. El sistema en red está PENDIENTE según versión 7 del SIG-P-001.",
+   brechas:["El sistema en red está pendiente → riesgo de pérdida si falla un PC.","No hay confirmación de que todas las áreas tienen versiones vigentes.","¿Cómo se protegen los documentos contra modificaciones no autorizadas?","El acceso a documentos obsoletos debe estar restringido."],
+   docs:["OLPASA-SIG-P-001","OLPASA-SIG-F-007,008,009,010"],
+   riesgoTexto:"MEDIO: Auditor puede pedir ver un documento en el PC del operador. Si tiene versión desactualizada → NC MENOR."},
+ ]},
+ {cap:"8",title:"Operación",items:[
+  {id:"8.1",title:"Planificación y control operacional",estado:"C",riesgo:"BAJO",
+   req:"Planificar, implementar y controlar procesos para cumplir requisitos de productos/servicios. Determinar criterios, recursos, implementar controles y conservar información documentada.",
+   analisis:"El proceso de extracción de ACP opera con: diagrama de flujo (PR-C-001), instructivos por etapa (PR-I), controles de proceso (PR-F), análisis de calidad (AQ-F-02). Los criterios de aceptación están en especificaciones (AQ-E-001).",
+   brechas:["Verificar que los criterios de aceptación del proceso están definidos en los instructivos.","Confirmar que los registros de proceso se conservan el tiempo requerido.","Los procesos contratados externamente deben estar bajo control."],
+   docs:["OLPASA-PR-C-001","OLPASA-PR-I-02,03,05,07","OLPASA-PR-F-001,003,004","OLPASA-AQ-F-02","OLPASA-AQ-E-001"],
+   riesgoTexto:"BAJO-MEDIO: Proceso productivo bien documentado. El riesgo es en la aplicación real vs lo documentado."},
+  {id:"8.2.1",title:"Comunicación con el cliente",estado:"P",riesgo:"ALTO",
+   req:"Comunicación sobre productos/servicios, consultas, contratos, retroalimentación del cliente incluyendo quejas, propiedad del cliente y acciones de contingencia.",
+   analisis:"Gestión Comercial maneja la comunicación con clientes. Se proporcionan especificaciones y certificados de calidad. Sin embargo, no se evidenció un procedimiento formal de atención de quejas y reclamos con seguimiento documentado.",
+   brechas:["No se evidenció procedimiento o registro formal de quejas y reclamos de clientes.","No hay confirmación de mecanismo para acciones de contingencia.","La retroalimentación del cliente no tiene canal formal documentado."],
+   docs:["OLPASA-AQ-E-001","Procedimiento GC","OLPASA-AQ-F-016","Registros de quejas (pendiente verificar)"],
+   riesgoTexto:"ALTO: Auditor pedirá el registro de quejas del período. Si no existe → NC MENOR. Sin seguimiento → OBSERVACIÓN."},
+  {id:"8.2.2",title:"Requisitos del producto",estado:"P",riesgo:"MEDIO",
+   req:"Definir requisitos del producto incluyendo los especificados por el cliente, los implícitos, los legales/reglamentarios y los de la propia organización.",
+   analisis:"Especificaciones técnicas del ACP (AQ-E-001) definen parámetros fisicoquímicos y de inocuidad. Se consideran normas AOAC y AOCS. Requisitos legales (DIGESA, SENASA, Codex) deben estar identificados.",
+   brechas:["No se confirmó que los requisitos legales y reglamentarios estén formalmente identificados y actualizados.","¿Se actualiza AQ-E-001 cuando cambia la normativa?","Los requisitos de cada cliente (pueden variar) deben estar documentados."],
+   docs:["OLPASA-AQ-E-001","Normativa DIGESA aplicable","Codex Alimentarius","Requisitos clientes"],
+   riesgoTexto:"MEDIO: Auditor verificará si los requisitos legales del ACP están identificados y actualizados según normativa vigente."},
+  {id:"8.2.3",title:"Revisión de requisitos del producto",estado:"P",riesgo:"MEDIO",
+   req:"Revisar capacidad de cumplir requisitos antes de comprometerse con el cliente. Conservar información documentada.",
+   analisis:"Antes del despacho se verifica conformidad del ACP con análisis de laboratorio. Sin embargo, la revisión contractual (antes de aceptar un pedido) no está claramente evidenciada.",
+   brechas:["La verificación pre-despacho cubre parte del requisito, pero la revisión ANTES de aceptar compromisos debe estar documentada.","No hay evidencia de revisión de contratos o pedidos formales.","¿Qué pasa si un cliente solicita especificaciones diferentes a las estándar?"],
+   docs:["OLPASA-AQ-F-02","Certificados de calidad de despacho","OLPASA-AQ-E-001"],
+   riesgoTexto:"MEDIO: Auditor puede pedir un contrato reciente y verificar que hubo revisión formal antes de la aceptación."},
+  {id:"8.2.4",title:"Cambios en requisitos del producto",estado:"P",riesgo:"BAJO",
+   req:"Cuando cambien los requisitos del producto, asegurar que la información documentada sea modificada y que las personas pertinentes sean conscientes.",
+   analisis:"El procedimiento SIG-P-001 gestiona cambios de versión en documentos. Si un cliente modifica requisitos, GC coordinaría con Calidad. Sin embargo, no hay un proceso formal documentado para este flujo.",
+   brechas:["No hay procedimiento formal que describa qué pasa cuando un cliente cambia sus requisitos.","El flujo GC → AQ → actualización documental no está formalizado."],
+   docs:["OLPASA-SIG-P-001","OLPASA-AQ-E-001","Comunicaciones con clientes"],
+   riesgoTexto:"BAJO-MEDIO: Punto que rara vez genera NC por sí solo, pero puede combinarse con otras debilidades en 8.2."},
+  {id:"8.3",title:"Diseño y desarrollo",estado:"P",riesgo:"MEDIO",
+   req:"Establecer, implementar y mantener proceso de diseño y desarrollo, o justificar su exclusión del alcance del SGC.",
+   analisis:"OLPASA produce ACP mediante extracción mecánica, proceso estable. No hay desarrollo de nuevos productos actualmente. Si OLPASA declara esta cláusula como NO APLICABLE debe justificarlo documentalmente.",
+   brechas:["La exclusión de 8.3 debe estar JUSTIFICADA formalmente en el documento de alcance.","Si la exclusión no está documentada con justificación → NC al momento de auditoría."],
+   docs:["Justificación de exclusión en el Alcance del SGC (OLPASA-SIG-C)"],
+   riesgoTexto:"MEDIO: Si la exclusión está justificada formalmente, no hay problema. Si no está documentada → NC MENOR."},
+  {id:"8.4.1",title:"Control de proveedores",estado:"N",riesgo:"MUY ALTO",
+   req:"Asegurar que procesos, productos y servicios externos son conformes. Definir criterios de evaluación, selección, seguimiento y reevaluación de proveedores. Conservar información documentada.",
+   analisis:"OLPASA tiene proveedores críticos: RFF, insumos químicos, calibración, laboratorios externos, control de plagas. No se evidenció procedimiento formal de evaluación y reevaluación de proveedores con criterios definidos y registros.",
+   brechas:["NO se evidenció procedimiento formal de evaluación y reevaluación de proveedores.","No hay lista de proveedores aprobados verificable.","No se confirmó la existencia de criterios de selección documentados.","No hay registros de evaluación periódica de desempeño de proveedores críticos."],
+   docs:["Pendiente: Procedimiento evaluación de proveedores (LO-P)","Lista de proveedores aprobados (pendiente)","Registros de evaluación (pendiente)"],
+   riesgoTexto:"MUY ALTO: Ausencia de evaluación de proveedores → NC MAYOR potencial. Es punto crítico en todas las auditorías ISO 9001."},
+  {id:"8.4.2",title:"Tipo y alcance del control",estado:"P",riesgo:"ALTO",
+   req:"Asegurar que procesos/productos/servicios externos no afectan adversamente la capacidad de OLPASA. Definir controles al proveedor y sus salidas.",
+   analisis:"Se aplican controles: evaluación de madurez del RFF en recepción, solicitud de fichas técnicas a proveedores de insumos, certificados de calibración acreditados. Sin embargo, no hay una matriz formal de controles por tipo de proveedor.",
+   brechas:["Los controles aplicados no están documentados formalmente en una matriz.","No hay criterios claros de aceptación/rechazo para cada tipo de proveedor.","¿Qué pasa si el RFF no cumple los criterios? ¿Hay procedimiento de rechazo documentado?"],
+   docs:["OLPASA-AQ-F-02 Evaluación RFF","Fichas técnicas insumos","Certificados calibración"],
+   riesgoTexto:"ALTO: Relacionado con 8.4.1. Auditor evaluará si los controles son proporcionales al riesgo de cada tipo de proveedor."},
+  {id:"8.4.3",title:"Información para proveedores",estado:"P",riesgo:"MEDIO",
+   req:"Comunicar a proveedores los requisitos de procesos, productos, servicios, aprobaciones, competencia y control del desempeño.",
+   analisis:"Se comunican requisitos de RFF a productores. Se solicitan fichas técnicas a proveedores de insumos. Se especifican análisis a laboratorios externos. Sin embargo, no hay evidencia formal de comunicación sistemática.",
+   brechas:["Los requisitos comunicados a proveedores no están formalizados como información documentada.","No hay evidencia de que los proveedores confirman entender y cumplir los requisitos.","Las órdenes de compra deben incluir los requisitos de calidad aplicables."],
+   docs:["OLPASA-AQ-E-001","Órdenes de compra","Especificaciones a proveedores"],
+   riesgoTexto:"MEDIO: Auditor puede pedir evidencia de qué requisitos se comunicaron a un proveedor crítico específico."},
+  {id:"8.5.1",title:"Control de la producción",estado:"C",riesgo:"BAJO",
+   req:"Implementar producción bajo condiciones controladas con información documentada disponible, seguimiento y medición implementados, infraestructura y ambiente adecuados, personas competentes.",
+   analisis:"Proceso bien controlado: instructivos por etapa (PR-I), registros diarios (PR-F-001,003,004), control de calidad en laboratorio, BPM y POES. Es uno de los puntos más fuertes de OLPASA dado el contexto HACCP.",
+   brechas:["Verificar que los instructivos están físicamente disponibles en el punto de uso en planta.","Confirmar que los operadores los usan realmente y no solo están archivados.","El PPRO del esterilizado (grasa vagones) debe tener evidencia de su control y monitoreo."],
+   docs:["OLPASA-PR-I-02,03,05,07","OLPASA-PR-F-001,003,004","OLPASA-AQ-F-014","OLPASA-SIG-M-001 BPM","OLPASA-SIG-L-001 Plan HACCP"],
+   riesgoTexto:"BAJO-MEDIO: Proceso bien documentado. El riesgo está en la brecha entre lo documentado y lo que realmente se hace en planta."},
+  {id:"8.5.2",title:"Identificación y trazabilidad",estado:"P",riesgo:"ALTO",
+   req:"Identificar salidas mediante medios apropiados. Controlar identificación única cuando la trazabilidad es requisito. Conservar información documentada.",
+   analisis:"OLPASA mantiene trazabilidad desde recepción de RFF hasta despacho en cisterna mediante registros de proceso y análisis de calidad. Los lotes se identifican por fecha/turno.",
+   brechas:["No se confirmó que el sistema de trazabilidad permita reconstruir el lote completo en tiempo razonable.","¿Existe un ejercicio de trazabilidad documentado?","La identificación única del ACP en tanques de almacenamiento puede ser problemática."],
+   docs:["OLPASA-AQ-F-02","OLPASA-PR-F-001,003,004","OLPASA-AQ-F-016","Registros de despacho"],
+   riesgoTexto:"ALTO: Auditor puede solicitar ejercicio de trazabilidad en tiempo real. Si no se puede reconstruir el lote → NC MENOR."},
+  {id:"8.5.4",title:"Preservación",estado:"C",riesgo:"BAJO",
+   req:"Preservar salidas durante producción y prestación del servicio para asegurar conformidad con requisitos.",
+   analisis:"ACP se preserva a temperatura controlada (85°C en tanques, mínimo 60°C en despacho en cisternas isotérmicas). Vida útil 1 año. Se controla calidad durante almacenamiento.",
+   brechas:["Verificar que existen registros de temperatura de tanques durante todo el período.","¿Hay procedimiento de qué hacer si la temperatura cae por debajo del mínimo?"],
+   docs:["OLPASA-AQ-E-001","OLPASA-AQ-F-016","Registros temperatura tanques"],
+   riesgoTexto:"BAJO: Las condiciones de preservación del ACP están bien definidas en las especificaciones."},
+  {id:"8.5.6",title:"Control de cambios en producción",estado:"P",riesgo:"MEDIO",
+   req:"Revisar y controlar cambios en producción para asegurar continuidad en la conformidad. Conservar información documentada.",
+   analisis:"Los cambios en documentación están controlados (SIG-P-001). Los cambios en parámetros de proceso se gestionan a través de MT y PR. Sin embargo, no hay evidencia de un proceso formal de control de cambios operacionales.",
+   brechas:["No hay procedimiento formal de gestión de cambios en producción (distinto al control de documentos).","¿Quién autoriza un cambio en los parámetros del esterilizador?","¿Se evalúa el impacto en calidad antes de implementar un cambio operacional?"],
+   docs:["OLPASA-SIG-P-001","OLPASA-MT-P-001","OLPASA-MT-F-001"],
+   riesgoTexto:"MEDIO: Auditor preguntará por cambios recientes en el proceso y cómo se controló."},
+  {id:"8.6",title:"Liberación de productos",estado:"C",riesgo:"BAJO",
+   req:"Verificar cumplimiento de requisitos del producto antes de liberar al cliente. Conservar información documentada con evidencia de conformidad y trazabilidad a quien autoriza.",
+   analisis:"Antes de cada despacho: análisis de acidez, humedad, impurezas y DOBI en laboratorio. Solo se despacha si cumple. Se emite certificado de calidad. Proceso bien controlado.",
+   brechas:["El certificado de calidad debe identificar claramente quién autorizó la liberación.","Verificar que hay un registro de CADA liberación con los resultados de análisis."],
+   docs:["OLPASA-AQ-F-02","Certificados de calidad de despacho","OLPASA-AQ-E-001","OLPASA-AQ-F-016"],
+   riesgoTexto:"BAJO: Proceso bien definido. La liberación del ACP está claramente controlada mediante análisis pre-despacho."},
+  {id:"8.7",title:"Control de salidas no conformes",estado:"P",riesgo:"ALTO",
+   req:"Identificar y controlar salidas no conformes para prevenir uso o entrega no intencional. Conservar información documentada.",
+   analisis:"Existe noción de manejo de NC (ACP fuera de especificación no se despacha). Sin embargo, no se evidenció un procedimiento formal con registros completos de: descripción, acciones, concesiones y autorización.",
+   brechas:["No se confirmó la existencia de un procedimiento formal de NC.","No se verificaron registros de NC del período.","¿Quién autoriza una concesión si el cliente acepta ACP fuera de especificación?","Las NC detectadas DESPUÉS del despacho también deben estar controladas."],
+   docs:["Pendiente verificar: Procedimiento NC","Registros de NC del período"],
+   riesgoTexto:"ALTO: Auditor pedirá registros de NC. Ausencia o muy pocos registros → señal de alerta. Una empresa sin NC documentadas no es creíble."},
+ ]},
+ {cap:"9",title:"Evaluación del Desempeño",items:[
+  {id:"9.1.1",title:"Seguimiento, medición, análisis y evaluación",estado:"P",riesgo:"ALTO",
+   req:"Determinar qué necesita seguimiento y medición, métodos, cuándo realizarlo y cuándo analizar resultados. Evaluar desempeño y eficacia del SGC. Conservar información documentada.",
+   analisis:"Se infiere que OLPASA tiene indicadores de proceso. Sin embargo, no se ha revisado si el sistema de indicadores cubre todos los procesos, si las frecuencias están definidas y si los resultados se analizan sistemáticamente.",
+   brechas:["No se verificaron los indicadores reales de cada proceso y si están medidos con la frecuencia definida.","No se confirmó si existe un cuadro de mando con resultados del período.","¿Se analiza la tendencia de los indicadores o solo el dato puntual?","¿Los métodos de análisis están definidos?"],
+   docs:["Fichas de indicadores por proceso","Cuadro de mando (pendiente verificar)","Informes de proceso"],
+   riesgoTexto:"ALTO: Auditor pedirá indicadores del período con datos reales. Indicadores sin datos o sin análisis → OBSERVACIÓN."},
+  {id:"9.1.2",title:"Satisfacción del cliente",estado:"N",riesgo:"MUY ALTO",
+   req:"Realizar seguimiento de percepciones del cliente sobre el cumplimiento de sus necesidades y expectativas. Determinar métodos para obtener, hacer seguimiento y revisar esta información.",
+   analisis:"NO se evidenció un mecanismo formal, periódico y documentado de medición de satisfacción del cliente. La retroalimentación informal de Gestión Comercial no es suficiente para ISO 9001.",
+   brechas:["NO existe mecanismo formal documentado de medición de satisfacción del cliente.","No hay metodología definida para obtener y analizar esta información.","No hay registros de retroalimentación del cliente del período.","Esta brecha es independiente de que el cliente esté satisfecho — el requisito es MEDIR y DOCUMENTAR."],
+   docs:["Pendiente: Encuesta de satisfacción del cliente","Registro de retroalimentación del cliente","Informe anual de satisfacción del cliente"],
+   riesgoTexto:"MUY ALTO: Ausencia de medición de satisfacción del cliente → NC MENOR casi segura. Es el requisito más recurrente en observaciones."},
+  {id:"9.1.3",title:"Análisis y evaluación",estado:"P",riesgo:"MEDIO",
+   req:"Analizar y evaluar datos e información del seguimiento y medición para evaluar: conformidad de productos, satisfacción del cliente, desempeño y eficacia del SGC, eficacia de R&O, desempeño de proveedores y necesidades de mejora.",
+   analisis:"El análisis de datos se realiza en la revisión por la dirección. Sin embargo, la profundidad del análisis depende de que los datos de 9.1.1, 9.1.2 y 8.4 estén disponibles, lo cual tiene brechas.",
+   brechas:["El análisis solo puede ser tan bueno como la calidad de los datos disponibles.","Si hay brechas en 9.1.1, 9.1.2 y 8.4.1, el análisis de 9.1.3 también estará incompleto.","¿Se usan técnicas estadísticas o visualización de tendencias?","¿Los resultados del análisis se usan REALMENTE para tomar decisiones?"],
+   docs:["Actas de Revisión por la Dirección","Informes de proceso","Resultados de auditorías"],
+   riesgoTexto:"MEDIO: El análisis de datos es consecuencia de otros puntos. Si se mejoran las brechas anteriores, este punto mejora automáticamente."},
+  {id:"9.2",title:"Auditoría interna",estado:"P",riesgo:"MEDIO",
+   req:"Llevar a cabo auditorías internas a intervalos planificados. Planificar programa. Seleccionar auditores objetivos. Informar resultados a dirección. Tomar acciones correctivas. Conservar información documentada.",
+   analisis:"OLPASA tiene procedimiento de auditorías internas (OLPASA-SIG-P-002), realiza auditorías mínimo una vez al año. Los auditores son personas distintas a los responsables de los procesos.",
+   brechas:["No se verificaron los informes de auditoría reales para confirmar cobertura de todos los procesos.","¿Las acciones correctivas de auditorías previas fueron cerradas eficazmente?","¿El programa se ajusta según resultados de auditorías anteriores?","¿Los auditores internos tienen la competencia requerida (formación en auditoría)?"],
+   docs:["OLPASA-SIG-P-002 Auditorías internas","Plan de auditoría","Informes de auditoría","Registros de hallazgos y AC"],
+   riesgoTexto:"MEDIO: Auditor externo revisará los informes de auditoría interna. NC abiertas sin cerrar → NC MENOR. Falta de competencia de auditores → OBSERVACIÓN."},
+  {id:"9.3",title:"Revisión por la dirección",estado:"P",riesgo:"ALTO",
+   req:"Alta dirección revisa el SGC a intervalos planificados. Entradas obligatorias: estado acciones previas, cambios contexto, desempeño SGC, recursos, R&O y oportunidades de mejora. Salidas: decisiones sobre mejora, cambios SGC y recursos.",
+   analisis:"El GG preside la revisión por la dirección. Existe procedimiento. Sin embargo, las actas deben incluir TODAS las entradas requeridas por 9.3.2 — y dadas las brechas en 9.1.1, 9.1.2, 6.1 y 8.4, las entradas de la RxD probablemente estén incompletas.",
+   brechas:["Las entradas de la RxD dependen de datos que tienen brechas (indicadores, satisfacción cliente, R&O, proveedores).","¿Las salidas (decisiones) incluyen responsables, plazos y recursos asignados?","¿Se hace seguimiento al cumplimiento de las decisiones de la RxD anterior?","¿La frecuencia de la RxD está definida y se cumple?"],
+   docs:["Actas de Revisión por la Dirección","Plan Operativo Anual","Informes de gestión"],
+   riesgoTexto:"ALTO: Auditor revisará actas de RxD en detalle. Actas incompletas → NC MENOR. Ausencia de seguimiento a decisiones previas → OBSERVACIÓN."},
+ ]},
+ {cap:"10",title:"Mejora",items:[
+  {id:"10.1",title:"Mejora - Generalidades",estado:"P",riesgo:"MEDIO",
+   req:"Determinar y seleccionar oportunidades de mejora e implementar acciones necesarias para cumplir requisitos del cliente y aumentar su satisfacción.",
+   analisis:"OLPASA identifica mejoras a través de auditorías internas y revisión por la dirección. La actualización continua de documentos (SIG-P-001 v7, Plan HACCP v8) es evidencia de mejora. Sin embargo, la mejora debe ser proactiva, no solo reactiva.",
+   brechas:["La mejora parece ser principalmente reactiva (ante NC y auditorías).","No se evidenció un sistema formal de gestión de oportunidades de mejora proactivas.","Las mejoras implementadas deben tener evidencia de su impacto en el desempeño del SGC."],
+   docs:["Actas de Revisión por la Dirección","Historial de versiones de documentos","Acciones correctivas cerradas"],
+   riesgoTexto:"MEDIO: Auditor pedirá ejemplos concretos de mejoras implementadas y su impacto medible en el SGC."},
+  {id:"10.2",title:"No conformidad y acción correctiva",estado:"P",riesgo:"MUY ALTO",
+   req:"Ante NC: reaccionar, tomar acciones de control y corrección. Evaluar necesidad de AC para eliminar causas. Implementar AC. Revisar eficacia. Actualizar R&O y SGC si es necesario. Conservar información documentada.",
+   analisis:"Existe noción de manejo de NC. Sin embargo, no se confirmó la existencia de un procedimiento formal con análisis de causa raíz estructurado (5 porqués, Ishikawa) y verificación de eficacia posterior a la implementación.",
+   brechas:["No se verificaron los registros de AC del período.","¿El análisis de causa raíz es riguroso o superficial? ('capacitar al personal' como única causa → señal de alerta).","¿Se verifica la eficacia de las AC después de implementarlas, no al mismo tiempo?","¿Las AC incluyen evaluación de si la NC puede ocurrir en otros procesos?"],
+   docs:["Pendiente verificar: Procedimiento de Acciones Correctivas (SIG-P o AQ-P)","Registros de AC del período"],
+   riesgoTexto:"MUY ALTO: Uno de los puntos más auditados. Análisis de causa raíz superficial o AC sin verificación de eficacia → NC MENOR. NC repetitivas → NC MAYOR."},
+  {id:"10.3",title:"Mejora continua",estado:"P",riesgo:"MEDIO",
+   req:"Mejorar continuamente la conveniencia, adecuación y eficacia del SGC. Considerar resultados de análisis y evaluación, y salidas de RxD.",
+   analisis:"OLPASA demuestra mejora continua en la evolución documental (SIG-P-001 v7, Plan HACCP v8). Sin embargo, la mejora continua debe demostrarse también con datos de indicadores con tendencia positiva.",
+   brechas:["La mejora continua debe demostrarse con DATOS, no solo con actualización de documentos.","¿Hay tendencia positiva en los indicadores de calidad del período auditado?","Sin datos de 9.1.1 y 9.1.2, es difícil demostrar mejora continua con evidencia objetiva."],
+   docs:["Historial de versiones de documentos","Evolución de indicadores","Actas RxD","Plan HACCP v8"],
+   riesgoTexto:"MEDIO: Punto que se demuestra con el conjunto de evidencias del SGC. Si los demás puntos están bien, este se cumple naturalmente."},
+ ]},
+];
+
+const ALL_ITEMS = CAPS.flatMap(c=>c.items);
+const RIESGO_CLS = {"MUY ALTO":"muy","ALTO":"alto","MEDIO":"medio","BAJO":"bajo"};
+const ESTADO_CFG = {
+  C:{label:"Cumple",icon:"✔",cls:"C",color:"#16a34a"},
+  P:{label:"Parcial",icon:"⚠",cls:"P",color:"#d97706"},
+  N:{label:"Brecha",icon:"✘",cls:"N",color:"#dc2626"}
+};
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let currentUser = null;
+let currentView = "dashboard";
+let selectedClausula = null;
+let cData = {};   // { id: {estado,notas,files[],lastUser,lastDate} }
+let tasks = [];
+let aiMsgs = [];
+let aiLoading = false;
+let chartBar = null;
+let chartPie = null;
+let collapsed = {};
+
+// ── Persistent storage ──
+async function storageGet(key){
+  try{
+    if(window.storage) return await window.storage.get(key,true);
+    const v=localStorage.getItem(key); return v?{value:v}:null;
+  }catch(e){
+    try{ const v=localStorage.getItem(key); return v?{value:v}:null; }catch(e2){ return null; }
+  }
+}
+async function storageSet(key,val){
+  try{
+    if(window.storage){ await window.storage.set(key,val,true); return; }
+    localStorage.setItem(key,val);
+  }catch(e){
+    try{ localStorage.setItem(key,val); }catch(e2){}
+  }
+}
+
+async function loadData(){
+  const cd = await storageGet("olpasa:cdata");
+  if(cd) try{ cData = JSON.parse(cd.value); }catch(e){}
+  const td = await storageGet("olpasa:tasks");
+  if(td) try{ tasks = JSON.parse(td.value); }catch(e){}
+}
+
+async function saveCData(){
+  await storageSet("olpasa:cdata", JSON.stringify(cData));
+}
+
+async function saveTasks(){
+  await storageSet("olpasa:tasks", JSON.stringify(tasks));
+}
+
+// ── Helpers ──
+function getEstado(id){
+  return cData[id]?.estado || ALL_ITEMS.find(i=>i.id===id)?.estado || "P";
+}
+
+function getCounts(){
+  let c=0,p=0,n=0;
+  ALL_ITEMS.forEach(i=>{ const e=getEstado(i.id); if(e==="C")c++; else if(e==="P")p++; else n++; });
+  return {c,p,n,total:ALL_ITEMS.length};
+}
+
+function riskClass(r){ return RIESGO_CLS[r]||"bajo"; }
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2800);
+}
+
+// ══════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════
+function initLogin(){
+  const el = document.getElementById("userBtns");
+  el.innerHTML = USERS.map(u=>`<button class="user-btn" onclick="login('${u}')">👤 ${u}</button>`).join("");
+}
+
+async function login(user){
+  currentUser = user;
+  await loadData();
+  document.getElementById("loginScreen").classList.remove("active");
+  document.getElementById("appScreen").classList.add("active");
+  document.getElementById("tbUser").textContent = "👤 " + user;
+  renderSidebar();
+  updateTopStats();
+  showView("dashboard");
+}
+
+// ══════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════
+function showView(view){
+  currentView = view;
+  ["dashboard","clausula","plan","matriz"].forEach(v=>{
+    document.getElementById("view"+cap(v)).style.display = v===view?"block":"none";
+  });
+  document.querySelectorAll(".nav-btn").forEach(b=>{
+    b.classList.toggle("active", b.textContent.toLowerCase().includes(view==="clausula"?"cláusula":view==="plan"?"plan":view==="matriz"?"matriz":"dashboard"));
+  });
+  if(view==="dashboard") renderDashboard();
+  else if(view==="clausula"){ if(selectedClausula) renderClausula(selectedClausula); else renderClausulaEmpty(); }
+  else if(view==="plan") renderPlan();
+  else if(view==="matriz") renderMatriz();
+}
+
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function selectClausula(id){
+  selectedClausula = id;
+  aiMsgs = [];
+  renderSidebar();
+  showView("clausula");
+}
+
+// ══════════════════════════════════════════════════════
+// TOPBAR STATS
+// ══════════════════════════════════════════════════════
+function updateTopStats(){
+  const {c,p,n} = getCounts();
+  const score = Math.round((c + p*0.5)/(c+p+n)*100);
+  document.getElementById("tbStats").innerHTML = `
+    <div class="stat-pill"><div class="stat-dot" style="background:#4ade80"></div>${c} Cumple</div>
+    <div class="stat-pill"><div class="stat-dot" style="background:#fbbf24"></div>${p} Parcial</div>
+    <div class="stat-pill"><div class="stat-dot" style="background:#f87171"></div>${n} Brecha</div>
+    <div class="score-badge">${score}%</div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════════════════
+function renderSidebar(){
+  const sb = document.getElementById("sidebar");
+  sb.innerHTML = CAPS.map(cap=>{
+    const isCol = collapsed[cap.cap];
+    const items = isCol ? "" : cap.items.map(item=>{
+      const est = getEstado(item.id);
+      const cfg = ESTADO_CFG[est];
+      const active = selectedClausula===item.id;
+      return `<div class="sb-item${active?" active":""}" onclick="selectClausula('${item.id}')">
+        <span class="sb-code">${item.id}</span>
+        <span class="sb-label">${item.title}</span>
+        <div class="sb-dot" style="background:${cfg.color}"></div>
+      </div>`;
+    }).join("");
+    return `<div class="sb-cap" onclick="toggleCap('${cap.cap}')">
+        <span>Cap.${cap.cap} — ${cap.title}</span><span>${isCol?"▶":"▼"}</span>
+      </div>${items}`;
+  }).join("");
+}
+
+function toggleCap(c){ collapsed[c]=!collapsed[c]; renderSidebar(); }
+
+// ══════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════
+function renderDashboard(){
+  const {c,p,n,total} = getCounts();
+  const score = Math.round((c+p*0.5)/total*100);
+  const criticals = ALL_ITEMS.filter(i=>getEstado(i.id)==="N");
+  const highRisk = ALL_ITEMS.filter(i=>(i.riesgo==="MUY ALTO"||i.riesgo==="ALTO")&&getEstado(i.id)!=="C");
+  const pendTasks = tasks.filter(t=>t.estado!=="Completado");
+
+  const barLabels = CAPS.map(c=>`Cap.${c.cap}`);
+  const barC = CAPS.map(cap=>cap.items.filter(i=>getEstado(i.id)==="C").length);
+  const barP = CAPS.map(cap=>cap.items.filter(i=>getEstado(i.id)==="P").length);
+  const barN = CAPS.map(cap=>cap.items.filter(i=>getEstado(i.id)==="N").length);
+
+  document.getElementById("viewDashboard").innerHTML = `
+    <div class="page-h1">Dashboard SGC</div>
+    <p class="page-sub">Estado general del Sistema de Gestión de Calidad ISO 9001:2015 · OLPASA · Febrero 2026</p>
+
+    <div class="kpi-grid">
+      ${[
+        {label:"Índice de cumplimiento",val:score+"%",color:score>=70?"#16a34a":score>=50?"#d97706":"#dc2626",sub:total+" cláusulas evaluadas"},
+        {label:"✔ Cumple",val:c,color:"#16a34a",sub:Math.round(c/total*100)+"% del total"},
+        {label:"⚠ Cumple parcialmente",val:p,color:"#d97706",sub:Math.round(p/total*100)+"% del total"},
+        {label:"✘ Brechas críticas",val:n,color:"#dc2626",sub:"Acción inmediata requerida"},
+      ].map(k=>`<div class="kpi">
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-val" style="color:${k.color}">${k.val}</div>
+        <div class="kpi-sub">${k.sub}</div>
+      </div>`).join("")}
+    </div>
+
+    <div class="charts-row">
+      <div class="card card-pad">
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px">Cumplimiento por capítulo</div>
+        <canvas id="barChart" height="160"></canvas>
+      </div>
+      <div class="card card-pad">
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px">Distribución general</div>
+        <canvas id="pieChart" height="160"></canvas>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px">
+          ${[["#22c55e","Cumple",c],["#f59e0b","Parcial",p],["#ef4444","Brecha",n]].map(([col,lab,val])=>`
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+            <div style="width:10px;height:10px;border-radius:3px;background:${col}"></div>
+            <span>${lab}: <strong>${val}</strong></span>
+          </div>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="alerts-row">
+      <div class="card card-pad">
+        <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:14px">⚠ Brechas críticas — Acción inmediata</div>
+        ${criticals.length===0?'<p style="color:var(--green);font-size:13px">✔ No hay brechas críticas</p>':
+          criticals.map(i=>`<div class="alert-item alert-c" onclick="selectClausula('${i.id}')">
+            <div class="alert-title" style="color:var(--red)">${i.id} — ${i.title}</div>
+            <div class="alert-body" style="color:#7f1d1d">${i.riesgoTexto.substring(0,90)}…</div>
+          </div>`).join("")}
+      </div>
+      <div class="card card-pad">
+        <div style="font-size:14px;font-weight:700;color:var(--amber);margin-bottom:14px">🔴 Alto riesgo en auditoría</div>
+        <div style="max-height:220px;overflow-y:auto">
+          ${highRisk.slice(0,8).map(i=>`<div class="alert-item alert-h" onclick="selectClausula('${i.id}')">
+            <div class="alert-title" style="color:#92400e">${i.id} — ${i.title}</div>
+            <div class="alert-body" style="color:#78350f">Riesgo: ${i.riesgo}</div>
+          </div>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    ${pendTasks.length>0?`<div class="card card-pad">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px">📌 Tareas pendientes (${pendTasks.length})</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
+        ${pendTasks.slice(0,6).map(t=>`<div style="padding:10px 14px;background:var(--grey);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">${t.titulo}</div>
+          <div style="font-size:11px;color:var(--muted)">📅 ${t.plazo||"Sin plazo"} · 👤 ${t.responsable}</div>
+        </div>`).join("")}
+      </div>
+    </div>`:""}
+  `;
+
+  // Charts
+  setTimeout(()=>{
+    if(chartBar){ chartBar.destroy(); chartBar=null; }
+    if(chartPie){ chartPie.destroy(); chartPie=null; }
+    const barCtx = document.getElementById("barChart");
+    if(barCtx) chartBar = new Chart(barCtx,{type:"bar",data:{labels:barLabels,datasets:[
+      {label:"Cumple",data:barC,backgroundColor:"#22c55e",borderRadius:4},
+      {label:"Parcial",data:barP,backgroundColor:"#f59e0b",borderRadius:4},
+      {label:"Brecha",data:barN,backgroundColor:"#ef4444",borderRadius:4},
+    ]},options:{responsive:true,plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},scales:{x:{stacked:false,ticks:{font:{size:11}}},y:{ticks:{font:{size:11}}}}}});
+    const pieCtx = document.getElementById("pieChart");
+    if(pieCtx) chartPie = new Chart(pieCtx,{type:"doughnut",data:{labels:["Cumple","Parcial","Brecha"],datasets:[{data:[c,p,n],backgroundColor:["#22c55e","#f59e0b","#ef4444"],borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,cutout:"55%",plugins:{legend:{display:false}}}});
+  },50);
+}
+
+// ══════════════════════════════════════════════════════
+// CLAUSULA VIEW
+// ══════════════════════════════════════════════════════
+function renderClausulaEmpty(){
+  document.getElementById("viewClausula").innerHTML = `
+    <div class="empty-state"><div class="empty-icon">📋</div><p>Selecciona una cláusula del panel izquierdo</p></div>`;
+}
+
+function renderClausula(id){
+  const item = ALL_ITEMS.find(i=>i.id===id);
+  if(!item){ renderClausulaEmpty(); return; }
+  const est = getEstado(id);
+  const cfg = ESTADO_CFG[est];
+  const d = cData[id]||{};
+  const files = d.files||[];
+
+  document.getElementById("viewClausula").innerHTML = `
+    <!-- HEADER -->
+    <div class="card card-pad cl-header" style="margin-bottom:16px">
+      <div style="flex:1">
+        <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--blue);font-weight:700;margin-bottom:4px">ISO 9001:2015 · Cláusula ${item.id}</div>
+        <h1 style="font-family:'DM Serif Display';font-size:22px;color:var(--navy);margin-bottom:8px">${item.title}</h1>
+        <p style="font-size:13px;color:#374151;line-height:1.6;border-left:3px solid var(--blue);padding-left:12px;margin:0">${item.req}</p>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Riesgo en auditoría</div>
+        <span class="badge badge-risk-${riskClass(item.riesgo)}" style="font-size:12px;padding:5px 14px">${item.riesgo}</span>
+        ${d.lastDate?`<div style="font-size:10px;color:#9ca3af;margin-top:6px">Actualizado: ${d.lastDate} · ${d.lastUser}</div>`:""}
+      </div>
+    </div>
+
+    <div class="cl-grid">
+      <div class="cl-left">
+        <!-- STATUS -->
+        <div class="card card-pad">
+          <div class="section-label">Estado del cumplimiento</div>
+          <div class="status-selector">
+            ${["C","P","N"].map(e=>`<button class="ss-btn${est===e?" sel-"+e:""}" onclick="setEstado('${id}','${e}')">${ESTADO_CFG[e].icon} ${ESTADO_CFG[e].label}</button>`).join("")}
+          </div>
+          <div style="background:${cfg.cls==="C"?"#dcfce7":cfg.cls==="P"?"#fef3c7":"#fee2e2"};border-radius:10px;padding:12px 16px;border-left:4px solid ${cfg.color}">
+            <div style="font-size:11px;font-weight:700;color:${cfg.color};margin-bottom:4px">ESTADO ACTUAL: ${cfg.label.toUpperCase()}</div>
+            <div style="font-size:13px;color:#374151;line-height:1.6">${item.analisis}</div>
+          </div>
+        </div>
+
+        <!-- BRECHAS -->
+        <div class="card card-pad">
+          <div class="section-label">Brechas identificadas</div>
+          ${item.brechas.map((b,i)=>`<div class="breach-item"><span class="breach-num">${i+1}.</span><span>${b}</span></div>`).join("")}
+          <div style="margin-top:12px;background:#fef2f2;border-radius:8px;padding:10px 14px;border-left:3px solid var(--red);font-size:12px;color:#7f1d1d;font-style:italic">
+            🔍 ${item.riesgoTexto}
+          </div>
+        </div>
+
+        <!-- DOCUMENTOS -->
+        <div class="card card-pad">
+          <div class="section-label">Documentos requeridos por la norma</div>
+          <div style="margin-bottom:14px">${item.docs.map(d=>`<span class="doc-chip">${d}</span>`).join("")}</div>
+
+          <div style="border-top:1px solid var(--grey);padding-top:16px">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px">📤 Subir documento de evidencia</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Sube el documento en PDF. La IA leerá el contenido completo y actualizará el análisis automáticamente. Puedes reemplazar el PDF anterior en cualquier momento.</div>
+
+            ${d.docActual ? `
+            <div class="doc-card">
+              <div class="doc-card-header">
+                <div class="doc-icon" style="background:${d.docActual.isPDF?'#fee2e2':d.docActual.isDocx?'#dbeafe':'#dcfce7'}">
+                  ${d.docActual.isPDF?'📕':d.docActual.isDocx?'📘':'📗'}
+                </div>
+                <div class="doc-card-meta">
+                  <div class="doc-card-name">${escHtml(d.docActual.name)}</div>
+                  <div class="doc-card-info">Subido por ${d.docActual.user} · ${d.docActual.date} · ${d.docActual.size}</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-shrink:0">
+                  <button class="doc-replace-btn" onclick="downloadDoc('${id}')" title="Descargar documento">⬇ Descargar</button>
+                  <label class="doc-replace-btn" style="cursor:pointer">
+                    🔄 Reemplazar
+                    <input type="file" style="display:none" onchange="uploadDoc('${id}',this)" accept=".pdf">
+                  </label>
+                </div>
+              </div>
+              ${d.aiAnalysis ? `
+              <div class="analysis-result">
+                <div class="analysis-header">✦ Análisis IA — ${escHtml(d.docActual.name)} <span style="opacity:.7;font-weight:400;margin-left:auto">Actualizado ${d.aiAnalysisDate}</span></div>
+                <div class="analysis-body">${escHtml(d.aiAnalysis)}</div>
+                <div class="analysis-actions">
+                  <button class="action-apply" onclick="analyzeDoc('${id}')">🔄 Re-analizar</button>
+                </div>
+              </div>` : `
+              <button class="analyze-btn" id="analyzeBtn_${id}" onclick="analyzeDoc('${id}')">
+                ✦ Analizar documento con IA
+              </button>`}
+            </div>` : `
+            <label class="doc-upload-zone" id="dropZone_${id}">
+              <input type="file" style="display:none" id="docInput_${id}" onchange="uploadDoc('${id}',this)" accept=".pdf">
+              <div style="font-size:28px;margin-bottom:8px">📂</div>
+              <div style="font-weight:700;color:var(--navy);margin-bottom:4px">Arrastra o haz clic para subir</div>
+              <div style="font-size:11px">Solo PDF · Máximo 4MB</div>
+            </label>`}
+
+            <div id="analyzingOverlay_${id}" style="display:none" class="analyzing-overlay">
+              <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px">✦ Analizando documento…</div>
+              <div style="font-size:12px;color:var(--muted);margin-bottom:4px">La IA está leyendo el contenido y evaluando el cumplimiento ISO 9001</div>
+              <div class="analyzing-bar"><div class="analyzing-bar-fill"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTAS -->
+        <div class="card card-pad">
+          <div class="section-label">Notas del equipo</div>
+          <textarea id="notes_${id}" class="notes-area" placeholder="Acciones tomadas, fechas, responsables, observaciones de campo...">${d.notas||""}</textarea>
+        </div>
+
+        <button class="save-btn" onclick="saveClausula('${id}')">💾 Guardar cambios</button>
+      </div>
+
+      <!-- AI CHAT -->
+      <div class="cl-right">
+        <div class="ai-panel">
+          <div class="ai-header">
+            <div style="font-size:14px;font-weight:700;color:var(--navy)">✦ Asistente IA — ${item.id}</div>
+            <div style="font-size:11px;color:var(--muted)">Consulta al experto ISO 9001 sobre esta cláusula</div>
+          </div>
+          <div class="ai-messages" id="aiMessages">
+            <div class="ai-empty">Pregunta cualquier cosa sobre esta cláusula.<br>Ej: "¿Qué evidencia necesito para la próxima auditoría?"</div>
+          </div>
+          <div class="ai-input-row">
+            <input class="ai-input" id="aiInput" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI('${id}');}">
+            <button class="ai-send" id="aiSend" onclick="sendAI('${id}')">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Restore AI messages
+  const msgBox = document.getElementById("aiMessages");
+  if(aiMsgs.length>0){
+    msgBox.innerHTML = aiMsgs.map(m=>`<div class="ai-msg ${m.role}">${escHtml(m.content)}</div>`).join("");
+  }
+}
+
+function escHtml(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+async function setEstado(id, est){
+  if(!cData[id]) cData[id]={};
+  cData[id].estado = est;
+  cData[id].lastDate = new Date().toLocaleDateString("es-PE");
+  cData[id].lastUser = currentUser;
+  await saveCData();
+  renderClausula(id);
+  renderSidebar();
+  updateTopStats();
+  showToast("Estado actualizado: "+ESTADO_CFG[est].icon+" "+ESTADO_CFG[est].label);
+}
+
+async function saveClausula(id){
+  if(!cData[id]) cData[id]={};
+  const notesEl = document.getElementById("notes_"+id);
+  if(notesEl) cData[id].notas = notesEl.value;
+  cData[id].lastDate = new Date().toLocaleDateString("es-PE");
+  cData[id].lastUser = currentUser;
+  await saveCData();
+  renderClausula(id);
+  updateTopStats();
+  showToast("💾 Guardado correctamente");
+}
+
+
+
+// ══════════════════════════════════════════════════════
+// AI CHAT
+// ══════════════════════════════════════════════════════
+async function sendAI(id){
+  if(aiLoading) return;
+  const input = document.getElementById("aiInput");
+  const msg = input?.value?.trim();
+  if(!msg) return;
+  input.value="";
+  const item = ALL_ITEMS.find(i=>i.id===id);
+  const est = getEstado(id);
+  const d = cData[id]||{};
+  aiMsgs.push({role:"user",content:msg});
+  renderAiMessages();
+  aiLoading=true;
+  const sendBtn=document.getElementById("aiSend");
+  if(sendBtn) sendBtn.disabled=true;
+  const systemCtx = "Eres un experto auditor ISO 9001:2015 y asesor de calidad de OLPASA (empresa peruana certificada que produce Aceite Crudo de Palma en Padre Abad, Ucayali). Responde en español, directo y práctico.\n\nCLÁUSULA: "+item.id+" – "+item.title+"\nESTADO: "+ESTADO_CFG[est].label+"\nREQUISITO: "+item.req+"\nBRECHAS: "+item.brechas.join("; ")+"\nNOTAS: "+(d.notas||"ninguna");
+  try{
+    const res = await fetch("/api/claude",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:1000,
+        system:systemCtx,
+        messages:aiMsgs.map(m=>({role:m.role,content:m.content}))
+      })
+    });
+    if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e?.error?.message||"HTTP "+res.status); }
+    const data=await res.json();
+    const reply=data.content?.map(c=>c.text||"").join("\n")||"Sin respuesta.";
+    aiMsgs.push({role:"assistant",content:reply});
+  }catch(e){
+    console.error("sendAI:",e);
+    aiMsgs.push({role:"assistant",content:"❌ Error: "+(e.message||"No se pudo conectar.")});
+  }
+  aiLoading=false;
+  if(sendBtn) sendBtn.disabled=false;
+  renderAiMessages();
+}
+
+function renderAiMessages(){
+  const box = document.getElementById("aiMessages");
+  if(!box) return;
+  if(aiMsgs.length===0){
+    box.innerHTML='<div class="ai-empty">Pregunta cualquier cosa sobre esta cláusula.</div>';
+    return;
+  }
+  box.innerHTML = aiMsgs.map(m=>`<div class="ai-msg ${m.role}">${escHtml(m.content)}</div>`).join("");
+  if(aiLoading) box.innerHTML += '<div class="ai-msg assistant"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  box.scrollTop = box.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════
+// PLAN DE ACCIÓN
+// ══════════════════════════════════════════════════════
+function renderPlan(){
+  const pend = tasks.filter(t=>t.estado==="Pendiente").length;
+  const enP  = tasks.filter(t=>t.estado==="En proceso").length;
+  const comp = tasks.filter(t=>t.estado==="Completado").length;
+  const PRIO_COLORS = {Crítica:"#dc2626",Alta:"#ea580c",Media:"#d97706",Baja:"#16a34a"};
+
+  document.getElementById("viewPlan").innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+      <div><div class="page-h1">Plan de Acción</div><p class="page-sub" style="margin:0">Tareas para cerrar brechas del SGC ISO 9001:2015</p></div>
+      <button onclick="openModal()" style="padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans'">+ Nueva tarea</button>
+    </div>
+
+    <div class="plan-stats">
+      ${[["Total",tasks.length,"var(--blue)"],["Pendiente",pend,"var(--red)"],["En proceso",enP,"var(--amber)"],["Completado",comp,"var(--green)"]].map(([l,v,c])=>`
+      <div class="plan-kpi"><label>${l}</label><span style="color:${c}">${v}</span></div>`).join("")}
+    </div>
+
+    <div class="filters" id="planFilters">
+      ${["Todos","Crítica","Alta","Media","Baja","Pendiente","En proceso","Completado"].map(f=>`
+      <button class="filter-btn${f==="Todos"?" active":""}" onclick="filterPlan('${f}',this)">${f}</button>`).join("")}
+    </div>
+
+    <div id="taskList">
+      ${renderTaskList("Todos")}
+    </div>
+
+    <button class="add-task-btn" onclick="openModal()">+</button>
+  `;
+}
+
+function renderTaskList(filter){
+  const filtered = filter==="Todos" ? tasks : tasks.filter(t=>t.prioridad===filter||t.estado===filter);
+  const PRIO_COLORS = {Crítica:"#dc2626",Alta:"#ea580c",Media:"#d97706",Baja:"#16a34a"};
+  const EST_BG = {"Pendiente":"#fee2e2","En proceso":"#fef3c7","Completado":"#dcfce7"};
+  const EST_CL = {"Pendiente":"#991b1b","En proceso":"#92400e","Completado":"#14532d"};
+  if(filtered.length===0) return `<div style="text-align:center;padding:60px;color:#9ca3af;font-size:14px">No hay tareas. Añade una para empezar.</div>`;
+  return filtered.map(t=>`
+    <div class="task-card">
+      <div class="task-prio-bar" style="background:${PRIO_COLORS[t.prioridad]||"#6b7a99"}"></div>
+      <div class="task-body">
+        <div class="task-title">${escHtml(t.titulo)}</div>
+        ${t.descripcion?`<div style="font-size:12px;color:var(--muted);margin-bottom:6px">${escHtml(t.descripcion)}</div>`:""}
+        <div class="task-meta">
+          ${t.clausula?`<span>📋 ${t.clausula}</span>`:""}
+          <span>👤 ${t.responsable||"—"}</span>
+          <span>📅 ${t.plazo||"Sin plazo"}</span>
+          <span>Creado por ${t.creadoPor} · ${t.creadoEn}</span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${PRIO_COLORS[t.prioridad]}22;color:${PRIO_COLORS[t.prioridad]}">${t.prioridad}</span>
+        <select class="task-estado-sel" style="background:${EST_BG[t.estado]||"#f8faff"};color:${EST_CL[t.estado]||"#374151"}" onchange="updateTaskEstado(${t.id},this.value)">
+          ${["Pendiente","En proceso","Completado"].map(s=>`<option${t.estado===s?" selected":""}>${s}</option>`).join("")}
+        </select>
+        <button class="task-del" onclick="deleteTask(${t.id})">🗑</button>
+      </div>
+    </div>`).join("");
+}
+
+function filterPlan(filter, btn){
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("taskList").innerHTML = renderTaskList(filter);
+}
+
+async function updateTaskEstado(id, est){
+  tasks = tasks.map(t=>t.id===id?{...t,estado:est}:t);
+  await saveTasks();
+  renderPlan();
+  showToast("Estado actualizado: "+est);
+}
+
+async function deleteTask(id){
+  tasks = tasks.filter(t=>t.id!==id);
+  await saveTasks();
+  renderPlan();
+  showToast("🗑 Tarea eliminada");
+}
+
+// MODAL
+function openModal(){
+  document.getElementById("fResponsable").value = currentUser;
+  document.getElementById("taskModal").classList.add("show");
+}
+
+function closeModal(){
+  document.getElementById("taskModal").classList.remove("show");
+  ["fTitulo","fClausula","fDesc"].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=""; });
+}
+
+async function addTask(){
+  const titulo = document.getElementById("fTitulo").value.trim();
+  if(!titulo){ showToast("El título es obligatorio"); return; }
+  const task = {
+    id:Date.now(),
+    titulo,
+    clausula:document.getElementById("fClausula").value,
+    prioridad:document.getElementById("fPrioridad").value,
+    estado:document.getElementById("fEstado").value,
+    responsable:document.getElementById("fResponsable").value,
+    plazo:document.getElementById("fPlazo").value,
+    descripcion:document.getElementById("fDesc").value,
+    creadoPor:currentUser,
+    creadoEn:new Date().toLocaleDateString("es-PE"),
+  };
+  tasks.push(task);
+  await saveTasks();
+  closeModal();
+  renderPlan();
+  showToast("✅ Tarea añadida al plan de acción");
+}
+
+// ══════════════════════════════════════════════════════
+// MATRIZ
+// ══════════════════════════════════════════════════════
+function renderMatriz(){
+  document.getElementById("viewMatriz").innerHTML = `
+    <div class="page-h1">Matriz de cumplimiento</div>
+    <p class="page-sub">Vista completa de todas las cláusulas ISO 9001:2015 · Haz clic para ver el detalle</p>
+    ${CAPS.map(cap=>`
+    <div style="margin-bottom:20px">
+      <div style="background:var(--navy);color:#fff;border-radius:10px 10px 0 0;padding:10px 18px;font-size:14px;font-weight:700">Cap. ${cap.cap} — ${cap.title}</div>
+      <div style="background:var(--white);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden">
+        <table class="matriz-table">
+          <thead><tr><th>Cláusula</th><th>Título</th><th>Estado</th><th>Riesgo</th><th>Principal brecha</th></tr></thead>
+          <tbody>
+            ${cap.items.map((item,i)=>{
+              const est = getEstado(item.id);
+              const cfg = ESTADO_CFG[est];
+              return `<tr onclick="selectClausula('${item.id}')">
+                <td style="font-family:'JetBrains Mono';font-size:12px;font-weight:700;color:var(--blue)">${item.id}</td>
+                <td style="font-weight:600">${item.title}</td>
+                <td><span class="badge badge-${est}">${cfg.icon} ${cfg.label}</span></td>
+                <td><span class="badge badge-risk-${riskClass(item.riesgo)}">${item.riesgo}</span></td>
+                <td style="color:var(--muted);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                  ${item.brechas[0]?.substring(0,75)||"—"}${item.brechas[0]?.length>75?"…":""}
+                  ${item.brechas.length>1?`<span style="color:#9ca3af"> +${item.brechas.length-1} más</span>`:""}
+                </td>
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>`).join("")}
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+// DOCUMENT UPLOAD + AI ANALYSIS
+// ══════════════════════════════════════════════════════
+async function uploadDoc(id, input){
+  const file = input.files[0];
+  if(!file) return;
+  if(!file.name.toLowerCase().endsWith(".pdf")){ showToast("❌ Solo se aceptan archivos PDF"); return; }
+  if(file.size > 4.5*1024*1024){ showToast("❌ Archivo muy grande (máx 4MB)"); return; }
+  showToast("⏳ Cargando PDF...");
+  let dataUrl = "";
+  try { dataUrl = await readFileAsDataURL(file); } catch(e){ showToast("❌ Error leyendo el archivo"); return; }
+  const sizeStr = file.size>1024*1024 ? (file.size/1024/1024).toFixed(1)+"MB" : Math.round(file.size/1024)+"KB";
+  if(!cData[id]) cData[id]={};
+  cData[id].docActual = {
+    name: file.name, size: sizeStr,
+    date: new Date().toLocaleDateString("es-PE"),
+    user: currentUser, dataUrl: dataUrl, isPDF: true
+  };
+  delete cData[id].aiAnalysis;
+  delete cData[id].aiAnalysisDate;
+  await saveCData();
+  renderClausula(id);
+  showToast("✅ PDF guardado — haz clic en '✦ Analizar con IA'");
+  input.value="";
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=e=>resolve(e.target.result);
+    r.onerror=()=>reject(new Error("Error leyendo archivo"));
+    r.readAsDataURL(file);
+  });
+}
+
+function readFileAsText(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=e=>resolve(e.target.result);
+    r.onerror=()=>reject(new Error(""));
+    r.readAsText(file,"UTF-8");
+  });
+}
+
+function downloadDoc(id){
+  const doc=cData[id]?.docActual;
+  if(!doc?.dataUrl){ showToast("No hay documento guardado"); return; }
+  const a=document.createElement("a");
+  a.href=doc.dataUrl; a.download=doc.name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast("⬇ Descargando "+doc.name);
+}
+
+async function analyzeDoc(id){
+  const item = ALL_ITEMS.find(i=>i.id===id);
+  const d = cData[id];
+  if(!d?.docActual?.dataUrl){ showToast("No hay PDF cargado"); return; }
+  const btn = document.getElementById("analyzeBtn_"+id);
+  const overlay = document.getElementById("analyzingOverlay_"+id);
+  if(btn) btn.style.display="none";
+  if(overlay) overlay.style.display="block";
+  const doc = d.docActual;
+  try {
+    const base64Data = doc.dataUrl.split(",")[1];
+    const body = {
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1200,
+      system:"Eres un auditor líder ISO 9001:2015 evaluando documentos del SGC de OLPASA (empresa certificada que produce Aceite Crudo de Palma en Padre Abad, Ucayali, Perú). Sé directo, técnico y accionable. Responde SIEMPRE en español.",
+      messages:[{ role:"user", content:[
+        { type:"document", source:{ type:"base64", media_type:"application/pdf", data:base64Data }},
+        { type:"text", text:buildAnalysisPrompt(item,doc) }
+      ]}]
+    };
+    const res = await fetch("/api/claude",{
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)
+    });
+    if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e?.error?.message||"HTTP "+res.status); }
+    const data = await res.json();
+    const analysis = data.content?.map(c=>c.text||"").join("\n")||"Sin respuesta.";
+    cData[id].aiAnalysis = analysis;
+    cData[id].aiAnalysisDate = new Date().toLocaleDateString("es-PE");
+    await saveCData();
+    renderClausula(id);
+    showToast("✦ Análisis completado");
+  } catch(e){
+    console.error("analyzeDoc:",e);
+    if(overlay) overlay.style.display="none";
+    if(btn){ btn.style.display="flex"; btn.innerHTML="✦ Reintentar análisis"; }
+    showToast("❌ "+(e.message||"Error en el análisis"));
+  }
+}
+
+function buildAnalysisPrompt(item, doc){
+  return `Analiza este documento en el contexto de la cláusula ${item.id} – "${item.title}" de ISO 9001:2015 para OLPASA.
+
+REQUISITO ISO 9001: ${item.req}
+
+BRECHAS IDENTIFICADAS PREVIAMENTE:
+${item.brechas.map((b,i)=>`${i+1}. ${b}`).join("\n")}
+
+NOMBRE DEL DOCUMENTO SUBIDO: ${doc.name}
+
+Por favor responde con esta estructura exacta:
+
+📋 EVALUACIÓN DEL DOCUMENTO
+[2-3 oraciones describiendo qué es el documento y si es el adecuado para esta cláusula]
+
+✅ EVIDENCIAS QUE CUMPLE
+[Lista con viñetas de lo que el documento demuestra que cumple del requisito ISO 9001]
+
+⚠️ BRECHAS QUE PERSISTEN
+[Lista con viñetas de brechas que este documento NO cubre o cubre parcialmente]
+
+🔄 CAMBIO DE ESTADO SUGERIDO
+[Elige UNA opción con justificación breve:]
+• ✔ CUMPLE — [razón concreta]
+• ⚠ CUMPLE PARCIALMENTE — [razón concreta]
+• ✘ SIGUE SIENDO BRECHA — [razón concreta]
+
+💡 ACCIÓN INMEDIATA ANTES DE LA AUDITORÍA
+[La acción más importante, en 1-2 oraciones concretas]`;
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+initLogin();
+</script>
+</body>
+</html>
