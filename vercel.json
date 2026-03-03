@@ -1,13 +1,6 @@
 {
   "version": 2,
-  "functions": {
-    "api/*.js": {
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
-    { "source": "/api/claude", "destination": "/api/claude" },
-    { "source": "/api/data", "destination": "/api/data" },
     { "source": "/(.*)", "destination": "/public/index.html" }
   ]
 }
